@@ -1,0 +1,22 @@
+<strong>Run the node app:</strong>
+<p>1.)Download/Clone the app.</p>
+<p>2.)Open cmd in project directory.</p>
+<p>3.)Run the commond <strong>npm init</strong> to install all dependencies</p>
+<p>4.)Run the command <strong>npm start</strong>to run the app</p>
+<p>5.)<strong>POST</strong>To Create a new contact :- localhost:3000/contact 
+<code>Request:- {
+	"name":"Bruce Wayne",
+	"email":"bruce@wayne.com",
+	"number":9010920191
+}</code>
+</p>
+<p>6.)<strong>PUT</strong>To Update a contact :- localhost:3000/contact
+<code>Request:- {
+	"_id":"5ccfef55bb24da30a89f85f7",
+	"name":"Dinesh Kumar",
+	"email":"dinesh@kumar.com",
+	"number":1234567890
+}</code>
+</p>
+<p>7.)<strong>DELETE</strong>To Delete a contact :- localhost:3000/contact/1234567890</p>
+<p>8.)<strong>GET</strong>To get contacts :- localhost:3000/contact/BRUC || localhost:3000/contact/1234</p>

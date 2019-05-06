@@ -4,6 +4,7 @@ const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+
 app.use(express.json());
 
 app.get('/contact/:query',(req,res)=>{
@@ -41,13 +42,15 @@ app.post('/contact',(req,res)=>{
             if(resp && resp.length > 0){
                 res.status(409).json({'errMsg':'Phone number already saved.'});
             }else{
-                if(!isNEU(name) && !isNEU(email) && !isNEU(number)){
+                if(!isNEU(name) && !isNEU(email) && !isNEU(number) && isValidEmail(email) && isValidPhone(number)){
                     let contact = new Contacts(req.body);
                     contact.save().then(response=>{
                         res.json("Successfully added the contact.");
                     }).catch(err=>{
                         res.status(500).json(err);
                     });
+                }else{
+                    res.status(400).json({'errMsg':'Incorrect data.'});
                 }                
             }
         }).catch(error=>{
@@ -62,7 +65,7 @@ app.put('/contact',(req,res)=>{
         const {name,email,number,_id} = req.body;
         Contacts.find({_id}).then(resp=>{            
             if(resp && resp.length > 0){
-                if(!isNEU(name) && !isNEU(email) && !isNEU(number)){ 
+                if(!isNEU(name) && !isNEU(email) && !isNEU(number) && isValidEmail(email) && isValidPhone(number)){ 
                     console.log("Updating");                   
                     Contacts.updateOne({_id},{$set:{name,number,email}},{upsert:true}).then(resp=>{
                         console.log(resp);
@@ -72,7 +75,7 @@ app.put('/contact',(req,res)=>{
                     })                                       
                 } 
             }else{
-                res.status(404).json({'errMsg':'Contact details not found!'});               
+                res.status(404).json({'errMsg':'Contact details not found or Incorrect data.'});               
             }
         }).catch(error=>{
             res.status(500).json({'errMsg':'Internal server error: '+error});
@@ -82,8 +85,8 @@ app.put('/contact',(req,res)=>{
     }
 });
 app.delete('/contact/:number',(req,res)=>{
-    let number = req.params;
-    if(!isNEU(number)){
+    let number = req.params.number;
+    if(!isNEU(number) && isValidPhone(number)){
         Contacts.find({number}).then(resp=>{
             if(resp && resp.length > 0){
                 Contacts.deleteOne({number}).then(response=>{
@@ -95,6 +98,8 @@ app.delete('/contact/:number',(req,res)=>{
                 res.status(404).json({'errMsg':'Contact details not found!'})               
             }
         });
+    }else{
+        res.status(400).json({'errMsg':'Incorrect data.'});
     }
 });
 app.get("*",(req,res)=>{
@@ -106,4 +111,15 @@ app.listen(PORT,()=>{
 
 function isNEU(param){
     return !(param !== null && param !== "null" && param != "Null" && param !== undefined && typeof(param) !== 'undefined' && param !== "" && param !== " ");
+}
+
+function isValidPhone(num){  
+    console.log(num);         
+    let re = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im; 
+    return re.test(num);
+}
+
+function isValidEmail(email) {
+    let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
 }
