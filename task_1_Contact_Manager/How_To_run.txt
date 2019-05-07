@@ -1,3 +1,8 @@
+<h1>Problem Statement:-<h1>
+<p>Contact manager:
+1. CRUD of name, email and phone number 
+2. Search by name , number and email </p>
+
 <strong>Run the node app:</strong>
 <p>1.)Download/Clone the app.</p>
 <p>2.)Open cmd in project directory.</p>
